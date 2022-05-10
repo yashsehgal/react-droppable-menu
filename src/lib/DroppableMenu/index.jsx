@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './styles/index.css';
 
 
 export default function DroppableMenu({
-    children, id, className, style, onClick, icon, title
+    children, className, style, onClick, icon, title
 }) {
     const [dropdownListRef, setDropdownList] = useState('none');
     const droppableMenuProperties = {
         'children': children,
-        'id': id ? id : null,
         'className': className ? `${className} react-droppable-menu__droppable-menu-button ` : `react-droppable-menu__droppable-menu-button `,
         'style': style ? style : null,
         'onClick': onClick,
@@ -16,20 +15,26 @@ export default function DroppableMenu({
         'title': title ? title : null
     };
 
+    useEffect(() => {
+        const dropdownButton = document.getElementById('dropdown-button');
+        dropdownButton.addEventListener("focusin", () => setDropdownList('block'));
+        dropdownButton.addEventListener("focusout", () => setDropdownList('none'));
+    });
+
     return (
         <React.Fragment>
             <button className={
                 droppableMenuProperties.className 
                     + (droppableMenuProperties.icon ? 'droppable-menu-button_circle' : 'droppable-menu-button_rounded-btn')
                 } 
-                id={droppableMenuProperties.id}
-                onClick={() => {
-                    if (dropdownListRef && dropdownListRef.toLowerCase() === 'block') {
-                        setDropdownList('none');
-                    } else {
-                        setDropdownList('block');
-                    }
-                }}
+                id="dropdown-button"
+                // onClick={() => {
+                //     if (dropdownListRef && dropdownListRef.toLowerCase() === 'block') {
+                //         setDropdownList('none');
+                //     } else {
+                //         setDropdownList('block');
+                //     }
+                // }}
             >
                 <div className="droppable-menu_button-content-wrapper">
                     <div style={{ width: 'fit-content', height: 'fit-content' }} id="droppable-menu-icon-slot">
@@ -40,9 +45,12 @@ export default function DroppableMenu({
                     </div>
                 </div>
             </button>
-            <div className="droppable-menu__dropdown-menu-container-screen" style={{ display: dropdownListRef }}>
+            <div className="droppable-menu__dropdown-menu-container-screen" style={{ display: dropdownListRef, background: '#ff000020' }}>
                 <div className="droppable-menu__dropdown-content-wrapper" style={{ display: dropdownListRef }}>
-                    { children ? children : <React.Fragment></React.Fragment> }
+                    { droppableMenuProperties.children 
+                        ? droppableMenuProperties.children 
+                        : <React.Fragment></React.Fragment> 
+                    }
                 </div>
             </div>
         </React.Fragment>
